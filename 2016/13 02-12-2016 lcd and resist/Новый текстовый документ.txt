@@ -1,0 +1,245 @@
+breadboard
+//
+while ((ADC1 -> ISR)&ADC_ISR_ADRDY != ADC_ISR_ADRDY)
+while ((ADC1 -> ISR & ADC_ISR_ADRDY) != ADC_ISR_ADRDY){
+		while (!(ADC1 -> ISR & ADC_ISR_ADRDY){
+
+
+#include "stm32f0xx.h" //xx for family
+
+//MACROS
+#define butt_in()							(GPIOA -> IDR & GPIO_IDR_0)
+#define LED_6_ON()						(GPIOC -> BSRR = GPIO_BSRR_BS_6)
+#define LED_6_OFF()						(GPIOC -> BSRR = GPIO_BSRR_BR_6)
+
+#define LED_7_ON()						(GPIOC -> BSRR = GPIO_BSRR_BS_7)
+#define LED_7_OFF()						(GPIOC -> BSRR = GPIO_BSRR_BR_7)
+
+#define LED_8_ON()						(GPIOC -> BSRR = GPIO_BSRR_BS_8)
+#define LED_8_OFF()						(GPIOC -> BSRR = GPIO_BSRR_BR_8)
+
+#define LED_9_ON()						(GPIOC -> BSRR = GPIO_BSRR_BS_9)
+#define LED_9_OFF()						(GPIOC -> BSRR = GPIO_BSRR_BR_9)
+
+#define PA15_ON()							(GPIOA -> BSRR = GPIO_BSRR_BS_15)
+#define PA15_OFF()						(GPIOA -> BSRR = GPIO_BSRR_BR_15)
+#define PC12_ON()							(GPIOC -> BSRR = GPIO_BSRR_BS_12)
+#define PC12_OFF()						(GPIOC -> BSRR = GPIO_BSRR_BR_12)
+#define PA45_in()             (GPIOA -> IDR & (GPIO_IDR_4 |GPIO_IDR_5 ))
+
+#define Port_A_ON()						(RCC -> AHBENR |= RCC_AHBENR_GPIOAEN)
+#define Port_C_ON()						(RCC -> AHBENR |= RCC_AHBENR_GPIOCEN)
+
+uint32_t DATA = 0;
+
+
+
+int main (void) {
+	
+	Port_A_ON();
+	Port_C_ON();
+	
+	//taktirovanie
+	RCC -> APB2ENR |= RCC_APB2ENR_ADCEN;
+	
+	//calibration
+	ADC1 -> CR = ADC_CR_ADCAL;
+	while (ADC1 -> CR == ADC_CR_ADCAL) {
+	}
+	
+	//turn on
+	ADC1 -> CR = ADC_CR_ADEN;
+	
+	//ready?
+	while (!(ADC1 -> ISR & ADC_ISR_ADRDY)){
+	}
+	
+	//
+	ADC1 -> CFGR1 = ADC_CFGR1_CONT;
+		
+	//
+	ADC1 -> CHSELR = ADC_CHSELR_CHSEL1;
+	
+	//
+	ADC1 -> CR |= ADC_CR_ADSTART;
+	
+	
+	
+	//out pin
+	GPIOC->MODER &= ~ (GPIO_MODER_MODER6 | GPIO_MODER_MODER8 | GPIO_MODER_MODER7 | GPIO_MODER_MODER9| GPIO_MODER_MODER12);
+	GPIOC->MODER |= GPIO_MODER_MODER6_0 | GPIO_MODER_MODER8_0| GPIO_MODER_MODER7_0| GPIO_MODER_MODER9_0| GPIO_MODER_MODER12_0  ; //01
+    
+    GPIOA->MODER &= ~ GPIO_MODER_MODER15;
+    GPIOA->MODER |= GPIO_MODER_MODER15_0;
+		
+	//o type
+	GPIOC->OTYPER &= ~ (GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_8 | GPIO_OTYPER_OT_7 | GPIO_OTYPER_OT_9);	
+	
+	//speed
+	GPIOC->OSPEEDR &= ~ (GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR8 | GPIO_OSPEEDER_OSPEEDR7 | GPIO_OSPEEDER_OSPEEDR9);		
+	
+	//pull up pull down
+	GPIOC->PUPDR &= ~   (GPIO_PUPDR_PUPDR6 | GPIO_PUPDR_PUPDR8 | GPIO_PUPDR_PUPDR7| GPIO_PUPDR_PUPDR9);
+  GPIOA->PUPDR &= ~   (GPIO_PUPDR_PUPDR4 | GPIO_PUPDR_PUPDR5);
+  GPIOA->PUPDR |=     (GPIO_PUPDR_PUPDR4_1 | GPIO_PUPDR_PUPDR5_1);
+	
+	
+	while(1) {	
+		
+		if((ADC1 -> ISR) & ADC_ISR_EOC ) {
+			
+			DATA = ADC1 -> DR;
+		}
+		
+		if((100<DATA)&&(DATA<1365)) {
+			LED_6_ON();		
+		}
+		
+		if((1365<DATA)&&(DATA<2730)) {
+			LED_6_ON();
+			LED_7_ON();			
+		}
+		
+		if(2730<=DATA) {
+			LED_6_ON();
+			LED_7_ON();
+			LED_8_ON();			
+		}
+		
+		LED_6_OFF();
+		LED_7_OFF(); 
+		LED_8_OFF();	
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+uint32_t KEY_REG_TMP = 0;
+uint32_t KEY_REG;
+int counter = 0;
+int N = 10000L;
+int i;
+void SysTick_Handler() {
+	
+    PA15_ON();
+    //for(i=0;i<10;i++);    
+    KEY_REG_TMP = PA45_in();
+    KEY_REG = KEY_REG_TMP >> 4;
+    PA15_OFF();
+    
+    
+    PC12_ON();
+    //for(i=0;i<10;i++);
+    KEY_REG_TMP = PA45_in();
+    KEY_REG = (KEY_REG | (KEY_REG_TMP)) >> 4;
+    PC12_OFF();
+
+
+}
+
+int main (void) {
+	
+	Port_A_ON();	
+	Port_C_ON();
+	
+	//out pin
+	GPIOC->MODER &= ~ (GPIO_MODER_MODER6 | GPIO_MODER_MODER8 | GPIO_MODER_MODER7 | GPIO_MODER_MODER9| GPIO_MODER_MODER12);
+	GPIOC->MODER |= GPIO_MODER_MODER6_0 | GPIO_MODER_MODER8_0| GPIO_MODER_MODER7_0| GPIO_MODER_MODER9_0| GPIO_MODER_MODER12_0  ; //01
+    
+    GPIOA->MODER &= ~ GPIO_MODER_MODER15;
+    GPIOA->MODER |= GPIO_MODER_MODER15_0;
+		
+	//o type
+	GPIOC->OTYPER &= ~ (GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_8 | GPIO_OTYPER_OT_7 | GPIO_OTYPER_OT_9);	
+	
+	//speed
+	GPIOC->OSPEEDR &= ~ (GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR8 | GPIO_OSPEEDER_OSPEEDR7 | GPIO_OSPEEDER_OSPEEDR9);		
+	
+	//pull up pull down
+	GPIOC->PUPDR &= ~   (GPIO_PUPDR_PUPDR6 | GPIO_PUPDR_PUPDR8 | GPIO_PUPDR_PUPDR7| GPIO_PUPDR_PUPDR9);
+    GPIOA->PUPDR &= ~   (GPIO_PUPDR_PUPDR4 | GPIO_PUPDR_PUPDR5);
+    GPIOA->PUPDR |=     (GPIO_PUPDR_PUPDR4_1 | GPIO_PUPDR_PUPDR5_1);
+	
+	//in pin
+	GPIOA->MODER &= ~ GPIO_MODER_MODER0;
+        
+    GPIOA->MODER &= ~ GPIO_MODER_MODER4;
+    GPIOA->MODER &= ~ GPIO_MODER_MODER5;
+
+    SysTick_Config(SystemCoreClock/1000); //interruption
+     
+    while(1) {
+        
+        if((KEY_REG & 0x1) == 0x1) {
+            LED_6_ON();
+        }
+        
+        if((KEY_REG & 0x2) == 0x2) {
+            LED_7_ON();
+        }
+        
+        if((KEY_REG & 0x4) == 0x4) {
+            LED_8_ON();
+        }
+        
+        if((KEY_REG & 0x8) == 0x8) {
+            LED_9_ON();
+        }
+        
+        
+        for(i=0;i<N;i++);
+        LED_6_OFF();
+        LED_7_OFF();
+        LED_8_OFF();
+        LED_9_OFF();
+		
+		}
+		
+
+}
+*/

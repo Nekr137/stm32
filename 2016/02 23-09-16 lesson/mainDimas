@@ -1,0 +1,195 @@
+#include <stm32f0xx.h>
+#define BUTT_READ()           (GPIOA -> IDR & GPIO_IDR_0)
+#define RED_LED_ON()            (GPIOC-> ODR |= GPIO_ODR_6)
+#define RED_LED_OFF()           (GPIOC-> ODR &= ~GPIO_ODR_6)
+
+//#define GREEN_LED_ON()            (GPIOC-> ODR |= GPIO_ODR_9)
+#define GREEN_LED_ON()            (GPIOC-> BSRR = GPIO_BSRR_BS_9)// BSRR - RM p.167
+#define GREEN_LED_OFF()           (GPIOC-> BSRR = GPIO_BSRR_BR_9)
+
+#define BLUE_LED_ON()            (GPIOC-> ODR |= GPIO_ODR_7)
+#define BLUE_LED_OFF()           (GPIOC-> ODR &= ~GPIO_ODR_7)
+
+#define YELLOW_LED_ON()            (GPIOC-> ODR |= GPIO_ODR_8)
+#define YELLOW_LED_OFF()           (GPIOC-> ODR &= ~GPIO_ODR_8)
+
+void LEDS_CLOCKWISE();
+void LEDS_COUNTERCLOCKWISE();
+void DELAY();
+
+uint32_t BUTT_STATE=0;
+int RED_COUNT=0;
+
+void SysTick_Handler()
+{
+   if (RED_COUNT == 0)
+   {
+       RED_LED_OFF();
+   }
+   else
+   {
+       RED_COUNT = RED_COUNT - 1;
+       RED_LED_ON();
+   }
+}
+
+int main()
+{
+    
+    SysTick_Config(SystemCoreClock/1000);// 1000HZ TICK
+/*
+    
+    RCC->AHBENR |= RCC_AHBENR_GPIOCEN; // TURN ON CLOCK FOR PORT C
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN; // TURN ON CLOCK FOR PORT A
+    
+    // INITIALIZATION
+    GPIOA->MODER &= ~GPIO_MODER_MODER0; //SET PIN TO INPUT MODE PORT A BUTTON
+    
+    //_0 THE Youngest bit
+    
+    GPIOC->MODER &= ~GPIO_MODER_MODER6;
+    GPIOC->MODER |= GPIO_MODER_MODER6_0; //SET PIN TO OUTPUT MODE PORT C LED
+    
+    
+    GPIOC->OTYPER &= ~GPIO_OTYPER_OT_6;
+    //GPIOC->OTYPER |= GPIO_OTYPER_OT_6; // SET OPEN-DRAIN TO PIN
+    
+    GPIOC->OSPEEDR &= ~GPIO_OSPEEDER_OSPEEDR6; //SET SPEED OF FRONT RI
+    //GPIOC->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR6_0 | GPIO_OSPEEDER_OSPEEDR6_1 ; sET TO BITS SIMULTENEOUSLY
+
+    GPIOC->PUPDR &= ~GPIO_PUPDR_PUPDR6;
+    
+    uint32_t BUTT_STATE;
+    
+    while (1==1)
+    {
+        
+        //BUTT_STATE = GPIOA -> IDR & GPIO_IDR_0; //READ PORT A and extract BUTT_STATE
+        //replaced with macros BUTT_READ
+        BUTT_STATE = BUTT_READ();
+        
+        if (BUTT_STATE==1)
+        {
+            //GPIOC-> ODR |= GPIO_ODR_6;
+            //replaced with macros RED_LED_ON
+            RED_LED_ON();
+        }
+        else
+        {
+            //GPIOC-> ODR &= ~GPIO_ODR_6;
+            //replaced with macros RED_LED_OFF
+            RED_LED_OFF();
+        }
+    }
+    */
+    
+    
+    RCC->AHBENR |= RCC_AHBENR_GPIOCEN; // TURN ON CLOCK FOR PORT C
+    RCC->AHBENR |= RCC_AHBENR_GPIOAEN; // TURN ON CLOCK FOR PORT A
+    
+    // INITIALIZATION
+    GPIOA->MODER &= ~GPIO_MODER_MODER0; //SET PIN TO INPUT MODE PORT A BUTTON
+    
+    //_0 THE Youngest bit
+    
+    GPIOC->MODER &= ~(GPIO_MODER_MODER6 | GPIO_MODER_MODER7 | GPIO_MODER_MODER8 | GPIO_MODER_MODER9);
+    GPIOC->MODER |= (GPIO_MODER_MODER6_0 | GPIO_MODER_MODER7_0 | GPIO_MODER_MODER8_0 | GPIO_MODER_MODER9_0); //SET PIN TO OUTPUT MODE PORT C LED
+    
+    
+    GPIOC->OTYPER &= ~(GPIO_OTYPER_OT_6 | GPIO_OTYPER_OT_7 | GPIO_OTYPER_OT_8 | GPIO_OTYPER_OT_9);
+    //GPIOC->OTYPER |= GPIO_OTYPER_OT_6; // SET OPEN-DRAIN TO PIN
+    
+    GPIOC->OSPEEDR &= ~(GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR7 | GPIO_OSPEEDER_OSPEEDR8 | GPIO_OSPEEDER_OSPEEDR9 ); //SET SPEED OF FRONT RI
+    //GPIOC->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR6_0 | GPIO_OSPEEDER_OSPEEDR6_1 ; sET TO BITS SIMULTENEOUSLY
+
+    GPIOC->PUPDR &= ~(GPIO_PUPDR_PUPDR6 | GPIO_PUPDR_PUPDR7 | GPIO_PUPDR_PUPDR8 | GPIO_PUPDR_PUPDR9);
+    
+    
+    
+    while (1==1)
+    {
+        
+        //BUTT_STATE = GPIOA -> IDR & GPIO_IDR_0; //READ PORT A and extract BUTT_STATE
+        //replaced with macros BUTT_READ
+       
+        
+          /*  BUTT_STATE = 0;
+            do
+            {
+                LEDS_CLOCKWISE();
+                
+            }
+            while (BUTT_STATE == 0);
+            
+            BUTT_STATE = 0;
+            
+            do
+            {
+                
+                LEDS_COUNTERCLOCKWISE();
+                
+            }
+            while (BUTT_STATE == 0);*/
+            
+            BUTT_STATE = BUTT_READ();
+            if (BUTT_STATE == 1)
+            {
+                RED_COUNT=100;
+            }
+    }
+}
+
+void DELAY()
+{
+    for (int i=0; i<100000; i++ )
+    {
+        // MAKE A DELAY TO AVOID JITTER
+        BUTT_STATE = BUTT_READ();
+        if (BUTT_STATE == 1)
+        {
+            break;
+        }
+    }
+}
+
+void LEDS_CLOCKWISE()
+{
+    
+    RED_LED_ON();
+    DELAY();
+    RED_LED_OFF();
+
+    YELLOW_LED_ON();
+    DELAY();
+    YELLOW_LED_OFF();
+
+    BLUE_LED_ON();
+    DELAY();
+    BLUE_LED_OFF();
+
+    GREEN_LED_ON();
+    DELAY();
+    GREEN_LED_OFF();
+    
+}
+
+void LEDS_COUNTERCLOCKWISE()
+{
+    
+    RED_LED_ON();
+    DELAY();
+    RED_LED_OFF();
+
+    GREEN_LED_ON();
+    DELAY();
+    GREEN_LED_OFF();
+
+    BLUE_LED_ON();
+    DELAY();
+    BLUE_LED_OFF();
+
+    YELLOW_LED_ON();
+    DELAY();
+    YELLOW_LED_OFF();
+    
+}

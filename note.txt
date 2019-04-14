@@ -1,0 +1,2 @@
+nRF24L01  - wifi transponder
+analogs: A7105, esp8266 (with usart, дороже)

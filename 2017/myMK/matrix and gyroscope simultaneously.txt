@@ -1,0 +1,22 @@
+
+
+//	while(1)
+//	{
+//	RESET_LE();
+//	while((SPI2->SR & SPI_SR_BSY)==SPI_SR_BSY){}
+//	SPI2->DR = adcr;
+//	while((SPI2->SR & SPI_SR_BSY) == SPI_SR_BSY){}
+//	SET_LE();
+	
+//		if(msTick>20)
+//		{
+//			msTick = 0;
+			GyrRefreshData(GyrData);
+			LCD_Show_double(GyrData[12],9,2);//need for msTick20
+//			LCD_Show_double(ADCread(),1,2);
+			LCD_Show_double(adcr,1,1);
+			//adcr = OSCConversionVoltage2Matrix(ADCread());
+//			OSCWriteADC(1);
+//		}
+	
+	}

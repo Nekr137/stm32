@@ -1,0 +1,5 @@
+
+Для снятия блокировки последовательно пишутся два числа ниже. Flash->Keyr = flash_key1. потом сразу же второй. 
+#define FLASH_KEY1 ((uint32_t)0x45670123)	
+#define FLASH_KEY2 ((uint32_t)0xCDEF89AB)
+

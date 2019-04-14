@@ -1,0 +1,36 @@
+	uint8_t my_sin2[256];		
+	double GyrData[18];//xl,xh,yl,yh,zl,zh,xl0,xh0,yl0,yh0,zl0,zh0,pxl,plh,pyl,pyh,pzl,plh
+
+
+
+	ADCconfig();
+	DACconfig();
+	LCDinit();  //uncomment if unused
+	LEDconfig();
+	Button_config();
+	SPIconfig();
+	Gyr_Callibration(GyrData);	
+	LCD_Battery(4,16,1,0x00);
+	StudyNVIC();
+
+	My64sin(my_sin2);// sin with using math.h
+
+
+while
+{	
+		GyrRefreshData(GyrData);
+		LCD_Show_double(ADCdata,1,1);
+		LCD_Show_double(GyrData[12],9,2);//need for msTick20
+		DACsin(300,100,100);//time = 300*1	
+		 
+		LCD_Show_double(ADCdata,1,1);	
+}
+
+
+SIN
+		{
+			msTick = 0;
+			if(indx>=255){indx = 0;}else{indx ++;}
+			DACwrite(my_sin2[indx]*16);
+			LEDshowNum(ADCread());
+		}

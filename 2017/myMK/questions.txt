@@ -1,0 +1,10 @@
+
+//SPI
+1. не получается, вроде CS LE меняю, но все равно перебивают друг друга,
+	
+	try to use DS (data size) bit
+2. настройки SPI разные для приборов 
+
+
+//DAC
+1. flag ready? I've to remuve "for"

@@ -1,0 +1,14 @@
+
+usart
+
+асинхронно
+
+протокол modbus (open)
+
+модуль дискр вв выв, M-7055 произовитлеь - icp-das
+
+wiki -> modbus.org -> пара базовых функций read write -> usart
+
+
+wiznet  аналоги кит.
+радиосфера.org

@@ -1,0 +1,8 @@
+Если инициализировать частоту, то лучше в мейне. 
+USART1->BRR = (SystemCoreClock / 115200);
+
+Можно в инициализации, но там махинации
+	// (8000000/16/9600) = 52.083; 52->0x34; 0.83*16->0x1; -> 0x341 !!! for 9600 boudrate
+
+
+http://en.radzio.dxp.pl/stm32vldiscovery/lesson8,communication,with,usart,basics.html
